@@ -1,0 +1,14 @@
+[package]
+name = "rust-locale"
+version = "0.1.0"
+edition = "2021"
+description = "POSIX.1 locale extension for Rust"
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+libc = "0.2"
+
+[build-dependencies]
+cc = "1.0"
