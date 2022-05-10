@@ -1,0 +1,33 @@
+name: rust-locale
+
+# The deploy section defines how to deploy your development environment
+# More info: https://www.okteto.com/docs/reference/manifest/#deploy
+deploy:
+  compose:
+    file: docker-compose.yaml
+
+# The dependencies section defines other git repositories to be deployed as part of your development environment
+# More info: https://www.okteto.com/docs/reference/manifest/#dependencies
+# dependencies:
+#   - https://github.com/okteto/sample
+
+
+# The dev section defines how to activate a development container
+# More info: https://www.okteto.com/docs/reference/manifest/#dev
+dev:
+  rust-locale-dev:
+    secrets:
+      - bashrc:/root/.bashrc:644
+      - $USERPROFILE\credentials.toml:/usr/local/cargo/credentials.toml:600
+      - $USERPROFILE\.gitignore_global:/root/.gitignore_global
+      - gitconfig:/root/.gitconfig
+      - $USERPROFILE\id_rsa:/root/.ssh/id_rsa:600
+    command: bash
+    workdir: /usr/src/app
+    sync:
+      - .:/usr/src/app
+    persistentVolume:
+      enabled: true
+      size: 1Gi
+    volumes:
+      - /root/.vscode-server
