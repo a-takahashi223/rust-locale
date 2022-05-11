@@ -8,7 +8,7 @@ orbs:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  test:
+  test-linux:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
@@ -26,10 +26,19 @@ jobs:
           key: v2-crate-index-{{ checksum "Cargo.toml" }}
           paths:
             - ~/.cargo/registry
+  test-macos:
+    macos:
+      xcode: 12.5.1
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "70:b2:f1:e3:19:00:d0:48:5d:d2:da:e1:68:5d:a4:3e"
+      - checkout
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   test:
     jobs:
-      - test
+      - test-linux
+      - test-macos
