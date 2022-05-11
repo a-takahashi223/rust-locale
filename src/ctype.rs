@@ -34,9 +34,9 @@ pub trait CType {
     ///
     /// assert!(' '.is_space());
     /// assert!(!'a'.is_space());
-    /// std::env::set_var("LANG", "POSIX");
+    /// std::env::set_var("LC_ALL", "POSIX");
     /// assert!(!'\u{2003}'.is_space());
-    /// std::env::set_var("LANG", "en_US");
+    /// std::env::set_var("LC_ALL", "en_US");
     /// assert!('\u{2003}'.is_space());
     /// ```
     fn is_space(&self) -> bool;
@@ -55,12 +55,12 @@ pub trait CType {
     ///
     /// assert_eq!(CType::to_uppercase(&'a'), 'A');
     /// assert_eq!(CType::to_uppercase(&'1'), '1');
-    /// std::env::set_var("LANG", "POSIX");
+    /// std::env::set_var("LC_ALL", "POSIX");
     /// assert_eq!(CType::to_uppercase(&'\u{017F}'), '\u{017F}');
-    /// std::env::set_var("LANG", "en_US");
+    /// std::env::set_var("LC_ALL", "en_US");
     /// assert_eq!(CType::to_uppercase(&'\u{017F}'), 'S');
     /// assert_eq!(CType::to_uppercase(&'i'), 'I');
-    /// std::env::set_var("LANG", "tr_TR");
+    /// std::env::set_var("LC_ALL", "tr_TR");
     /// assert_eq!(CType::to_uppercase(&'i'), '\u{0130}');
     /// ```
     fn to_uppercase(&self) -> Self;
@@ -149,7 +149,7 @@ mod tests {
 
     #[test]
     fn is_space_i18n() {
-        environ::set_var("LANG", "POSIX");
+        environ::set_var("LC_ALL", "POSIX");
         assert!(!'\u{1680}'.is_space());
         assert!(!'\u{2000}'.is_space());
         assert!(!'\u{2006}'.is_space());
@@ -159,7 +159,7 @@ mod tests {
         assert!(!'\u{2029}'.is_space());
         assert!(!'\u{205F}'.is_space());
         assert!(!'\u{3000}'.is_space());
-        environ::set_var("LANG", "en_US");
+        environ::set_var("LC_ALL", "en_US");
         assert!('\u{1680}'.is_space());
         assert!('\u{2000}'.is_space());
         assert!('\u{2006}'.is_space());
@@ -173,9 +173,9 @@ mod tests {
 
     #[test]
     fn is_space_special() {
-        environ::set_var("LANG", "en_US");
+        environ::set_var("LC_ALL", "en_US");
         assert!(!'\u{1361}'.is_space());
-        environ::set_var("LANG", "am_ET");
+        environ::set_var("LC_ALL", "am_ET");
         assert!('\u{1361}'.is_space());
     }
 
@@ -183,12 +183,12 @@ mod tests {
     fn to_uppercase() {
         assert_eq!(CType::to_uppercase(&'a'), 'A');
         assert_eq!(CType::to_uppercase(&'1'), '1');
-        std::env::set_var("LANG", "POSIX");
+        std::env::set_var("LC_ALL", "POSIX");
         assert_eq!(CType::to_uppercase(&'\u{017F}'), '\u{017F}');
-        std::env::set_var("LANG", "en_US");
+        std::env::set_var("LC_ALL", "en_US");
         assert_eq!(CType::to_uppercase(&'\u{017F}'), 'S');
         assert_eq!(CType::to_uppercase(&'i'), 'I');
-        std::env::set_var("LANG", "tr_TR");
+        std::env::set_var("LC_ALL", "tr_TR");
         assert_eq!(CType::to_uppercase(&'i'), '\u{0130}');
     }
 }
