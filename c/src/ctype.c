@@ -1,3 +1,5 @@
+#include <config.h>
+
 #include <inttypes.h>
 #include <locale.h>
 #include <string.h>
