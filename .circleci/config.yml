@@ -22,6 +22,11 @@ jobs:
       - restore_cache:
           key: v2-crate-index-{{ checksum "Cargo.toml" }}
       - run: cargo test -- --test-threads=1
+      - run: cargo package --no-verify
+      - persist_to_workspace:
+          root: target/package
+          paths:
+            - rust-locale-*.crate
       - save_cache:
           key: v2-crate-index-{{ checksum "Cargo.toml" }}
           paths:
@@ -34,6 +39,8 @@ jobs:
           fingerprints:
             - "70:b2:f1:e3:19:00:d0:48:5d:d2:da:e1:68:5d:a4:3e"
       - checkout
+      - attach_workspace:
+          at: target/package
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -41,4 +48,6 @@ workflows:
   test:
     jobs:
       - test-linux
-      - test-macos
+      - test-macos:
+          requires:
+            - test-linux
