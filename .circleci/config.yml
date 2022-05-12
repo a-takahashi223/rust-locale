@@ -2,34 +2,25 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-orbs: 
-  rust: circleci/rust@1.6.0
-
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  test:
+  say-hello:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
-      - image: cimg/rust:1.60.0
+      - image: cimg/base:stable
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
-      - run: sudo apt update
-      - run: sudo apt install locales-all -y --no-install-recommends
       - checkout
-      - restore_cache:
-          key: v2-crate-index-{{ checksum "Cargo.toml" }}
-      - run: cargo test -- --test-threads=1
-      - save_cache:
-          key: v2-crate-index-{{ checksum "Cargo.toml" }}
-          paths:
-            - ~/.cargo/registry
+      - run:
+          name: "Say hello"
+          command: "echo Hello, World!"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  test:
+  say-hello-workflow:
     jobs:
-      - test
+      - say-hello
