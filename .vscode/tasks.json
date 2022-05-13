@@ -6,7 +6,8 @@
 			"command": "test",
 			"args": [
 				"--",
-				"--test-threads=1"
+				"--test-threads=1",
+				"--include-ignored"
 			],
 			"problemMatcher": [
 				"$rustc"
