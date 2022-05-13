@@ -21,13 +21,12 @@ dev:
       - $USERPROFILE\credentials.toml:/usr/local/cargo/credentials.toml:600
       - $USERPROFILE\.gitignore_global:/root/.gitignore_global
       - gitconfig:/root/.gitconfig
-      - $USERPROFILE\id_rsa:/root/.ssh/id_rsa:600
     command: bash
     workdir: /usr/src/app
     sync:
       - .:/usr/src/app
     persistentVolume:
       enabled: true
-      size: 1Gi
+      size: 500Mi
     volumes:
       - /root/.vscode-server
