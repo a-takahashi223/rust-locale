@@ -21,6 +21,7 @@ jobs:
       - checkout
       - restore_cache:
           key: v2-crate-index-{{ checksum "Cargo.toml" }}
+      - run: cd c && { autoreconf -i; cd -;}
       - run: cargo test -- --test-threads=1
       - run: cargo package --no-verify
       - persist_to_workspace:
