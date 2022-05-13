@@ -11,10 +11,20 @@
  * なぜか uselocale() を C の中でやらないといけない
  */
 
+static inline locale_t
+utf8_locale(void)
+{
+    locale_t l = newlocale(LC_CTYPE_MASK, "C.UTF-8", 0);
+    if (!l) {
+        l = newlocale(LC_CTYPE_MASK, "en_US.UTF-8", 0);
+    }
+    return l;
+}
+
 uint_fast8_t
 utf8towc(wchar_t* wcbuf, const char* utf8_bytes, size_t length)
 {
-    const locale_t l = newlocale(LC_CTYPE_MASK, "C.UTF-8", 0);
+    const locale_t l = utf8_locale();
     if (!l) {
         return 0x1;
     }
@@ -36,7 +46,7 @@ utf8towc(wchar_t* wcbuf, const char* utf8_bytes, size_t length)
 ssize_t
 wctoutf8(char* utf8_bytes, wchar_t wc)
 {
-    const locale_t l = newlocale(LC_CTYPE_MASK, "C.UTF-8", 0);
+    const locale_t l = utf8_locale();
     if (!l) {
         return -0x1;
     }
