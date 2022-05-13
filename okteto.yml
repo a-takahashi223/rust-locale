@@ -19,12 +19,10 @@ dev:
     secrets:
       - bashrc:/root/.bashrc:644
       - $USERPROFILE\credentials.toml:/usr/local/cargo/credentials.toml:600
-      - $USERPROFILE\.gitignore_global:/root/.gitignore_global
-      - gitconfig:/root/.gitconfig
     command: bash
-    workdir: /usr/src/app
+    workdir: /usr/local/src/rust-locale
     sync:
-      - .:/usr/src/app
+      - .:/usr/local/src/rust-locale
     persistentVolume:
       enabled: true
       size: 500Mi
