@@ -21,7 +21,7 @@ jobs:
       - checkout
       - restore_cache:
           key: v2-crate-index-{{ checksum "Cargo.toml" }}
-      - run: cd c && { autoreconf -i; cd -;}
+      - run: (cd c && autoreconf -i)
       - run: cargo test -- --test-threads=1
       - run: cargo package --allow-dirty --no-verify
       - persist_to_workspace:
@@ -42,6 +42,13 @@ jobs:
       - checkout
       - attach_workspace:
           at: target/package
+      - run: curl https://sh.rustup.rs -sSf | sh -s -- -y
+      - run: >-
+          source ~/.cargo/env &&
+          cd target/package &&
+          tar xf rust-locale-*.crate &&
+          cd "$(ls | head -n 1)" &&
+          cargo test -- --test-threads=1
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows

@@ -4,5 +4,4 @@
 
 pub use ctype::CType;
 
-mod util;
 pub mod ctype;

@@ -1,6 +1,6 @@
 use libc::{c_char, wchar_t};
 
-use super::util::errno;
+use errno::errno;
 
 mod c {
     #[allow(non_camel_case_types)]
@@ -102,7 +102,7 @@ fn utf8towc(utf8_bytes: &Vec<u8>) -> wchar_t {
         )
     } {
         s if s == 0 => wc,
-        s => panic!("utf8towc failed. status={}, errno={}", s, errno()),
+        s => panic!("utf8towc failed. status={}, error={}", s, errno()),
     }
 }
 
@@ -117,14 +117,14 @@ fn wctochar(wc: wchar_t) -> char {
                 .next()
                 .unwrap()
         }
-        status => panic!("wctochar failed. status={}, errno={}", status, errno()),
+        status => panic!("wctochar failed. status={}, error={}", status, errno()),
     }
 }
 
 fn iswspace(wc: wchar_t) -> bool {
     match unsafe { c::iswspace_native(wc.into()) } {
         s if s >= 0 => s != 0,
-        _ => panic!("iswspace_native failed. errno={}", errno()),
+        _ => panic!("iswspace_native failed. error={}", errno()),
     }
 }
 

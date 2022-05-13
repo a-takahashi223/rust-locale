@@ -109,5 +109,6 @@ include = [
 
 [dependencies]
 libc = "0.2"
+errno = "0.2"
 
 [build-dependencies]
