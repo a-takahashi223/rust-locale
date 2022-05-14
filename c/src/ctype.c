@@ -82,6 +82,19 @@ iswspace_native(wint_t ch)
     return ret ? 1 : 0;
 }
 
+int
+iswblank_native(wint_t ch)
+{
+    const locale_t l = newlocale(LC_CTYPE_MASK, "", 0);
+    (void)uselocale(l);
+
+    const int ret = iswblank(ch);
+
+    (void)uselocale(LC_GLOBAL_LOCALE);
+    freelocale(l);
+    return ret;
+}
+
 wint_t
 towupper_native(wint_t ch)
 {

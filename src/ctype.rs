@@ -15,6 +15,7 @@ mod c {
         ) -> u8;
         pub fn wctoutf8(utf8_bytes: *mut libc::c_char, wc: libc::wchar_t) -> libc::ssize_t;
         pub fn iswspace_native(ch: wint_t) -> i8;
+        pub fn iswblank_native(ch: wint_t) -> libc::c_int;
         pub fn towupper_native(ch: wint_t) -> wint_t;
         pub fn towlower_native(ch: wint_t) -> wint_t;
     }
@@ -42,6 +43,22 @@ pub trait CType {
     /// ```
     fn is_space(&self) -> bool;
 
+    /// Checks if `self` is classified as blank character (that is, a whitespace character used to separate words in a sentence) by the current locale.
+    ///
+    /// # examples
+    ///
+    /// ```
+    /// use rust_locale::CType;
+    ///
+    /// assert!(' '.is_blank());
+    /// assert!(!'\n'.is_blank());
+    /// std::env::set_var("LC_ALL", "POSIX");
+    /// assert!(!'\u{3000}'.is_blank());
+    /// std::env::set_var("LC_ALL", "en_US");
+    /// assert!('\u{3000}'.is_blank());
+    /// ```
+    fn is_blank(&self) -> bool;
+
     /// Converts `self` to uppercase listed in the current locale.
     ///
     /// If no uppercase version is listed in the current locale, returns unmodified `self`.
@@ -64,12 +81,12 @@ pub trait CType {
     fn to_uppercase(&self) -> Self;
 
     /// Converts `self` to lowercase, if possible.
-    /// 
+    ///
     /// If no lowercase version is listed in the current locale, returns unmodified `self`.
-    /// 
+    ///
     /// Only 1:1 character mapping can be performed by this function, e.g. the Greek uppercase letter 'Σ' has two lowercase forms,
     /// depending on the position in a word: 'σ' and 'ς'. A call to this method cannot be used to obtain the correct lowercase form in this case.
-    /// 
+    ///
     /// # examples
     ///
     /// ```
@@ -92,7 +109,17 @@ impl CType for char {
             unsafe { libc::isspace(buf[0].into()) != 0 }
         } else {
             let wc = utf8towc(&buf);
-            iswspace(wc)
+            isspace(wc)
+        }
+    }
+
+    fn is_blank(&self) -> bool {
+        let buf = utf8_bytes(self);
+        if buf.len() == 1 {
+            unsafe { libc::isblank(buf[0].into()) != 0 }
+        } else {
+            let wc = utf8towc(&buf);
+            isblank(wc)
         }
     }
 
@@ -147,11 +174,15 @@ fn wctochar(wc: wchar_t) -> char {
     }
 }
 
-fn iswspace(wc: wchar_t) -> bool {
+fn isspace(wc: wchar_t) -> bool {
     match unsafe { c::iswspace_native(wc.into()) } {
         s if s >= 0 => s != 0,
         _ => panic!("iswspace_native failed. error={}", errno()),
     }
+}
+
+fn isblank(wc: wchar_t) -> bool {
+    unsafe { c::iswblank_native(wc.into()) != 0 }
 }
 
 fn toupper(wc: wchar_t) -> wchar_t {
@@ -207,6 +238,18 @@ mod tests {
         assert!(!'\u{1361}'.is_space());
         std::env::set_var("LC_ALL", "am_ET");
         assert!('\u{1361}'.is_space());
+    }
+
+    #[test]
+    fn is_blank() {
+        std::env::set_var("LC_ALL", "POSIX");
+        assert!(' '.is_blank());
+        assert!('\t'.is_blank());
+        assert!(!'\n'.is_blank());
+        assert!(!'\u{3000}'.is_blank());
+        std::env::set_var("LC_ALL", "en_US");
+        assert!('\u{3000}'.is_blank());
+        assert!(!'\u{2028}'.is_blank());
     }
 
     #[test]
