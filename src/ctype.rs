@@ -16,6 +16,7 @@ mod c {
         pub fn wctoutf8(utf8_bytes: *mut libc::c_char, wc: libc::wchar_t) -> libc::ssize_t;
         pub fn iswspace_native(ch: wint_t) -> i8;
         pub fn towupper_native(ch: wint_t) -> wint_t;
+        pub fn towlower_native(ch: wint_t) -> wint_t;
     }
 }
 
@@ -61,6 +62,27 @@ pub trait CType {
     /// assert_eq!(CType::to_uppercase(&'\u{017F}'), 'S');
     /// ```
     fn to_uppercase(&self) -> Self;
+
+    /// Converts `self` to lowercase, if possible.
+    /// 
+    /// If no lowercase version is listed in the current locale, returns unmodified `self`.
+    /// 
+    /// Only 1:1 character mapping can be performed by this function, e.g. the Greek uppercase letter 'Σ' has two lowercase forms,
+    /// depending on the position in a word: 'σ' and 'ς'. A call to this method cannot be used to obtain the correct lowercase form in this case.
+    /// 
+    /// # examples
+    ///
+    /// ```
+    /// use rust_locale::CType;
+    ///
+    /// assert_eq!(CType::to_lowercase(&'A'), 'a');
+    /// assert_eq!(CType::to_lowercase(&'1'), '1');
+    /// std::env::set_var("LC_ALL", "POSIX");
+    /// assert_eq!(CType::to_lowercase(&'\u{0190}'), '\u{0190}');
+    /// std::env::set_var("LC_ALL", "en_US");
+    /// assert_eq!(CType::to_lowercase(&'\u{0190}'), '\u{025b}');
+    /// ```
+    fn to_lowercase(&self) -> Self;
 }
 
 impl CType for char {
@@ -79,6 +101,13 @@ impl CType for char {
         let wc = utf8towc(&bytes);
         let upper = toupper(wc);
         wctochar(upper)
+    }
+
+    fn to_lowercase(&self) -> char {
+        let bytes = utf8_bytes(self);
+        let wc = utf8towc(&bytes);
+        let lower = tolower(wc);
+        wctochar(lower)
     }
 }
 
@@ -129,10 +158,13 @@ fn toupper(wc: wchar_t) -> wchar_t {
     unsafe { c::towupper_native(wc.into()) as wchar_t }
 }
 
+fn tolower(wc: wchar_t) -> wchar_t {
+    unsafe { c::towlower_native(wc.into()) as wchar_t }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::env as environ;
 
     #[test]
     fn is_always_space() {
@@ -146,7 +178,7 @@ mod tests {
 
     #[test]
     fn is_space_i18n() {
-        environ::set_var("LC_ALL", "POSIX");
+        std::env::set_var("LC_ALL", "POSIX");
         assert!(!'\u{1680}'.is_space());
         assert!(!'\u{2000}'.is_space());
         assert!(!'\u{2006}'.is_space());
@@ -156,7 +188,7 @@ mod tests {
         assert!(!'\u{2029}'.is_space());
         assert!(!'\u{205F}'.is_space());
         assert!(!'\u{3000}'.is_space());
-        environ::set_var("LC_ALL", "en_US");
+        std::env::set_var("LC_ALL", "en_US");
         assert!('\u{1680}'.is_space());
         assert!('\u{2000}'.is_space());
         assert!('\u{2006}'.is_space());
@@ -171,9 +203,9 @@ mod tests {
     #[test]
     #[ignore]
     fn is_space_special() {
-        environ::set_var("LC_ALL", "en_US");
+        std::env::set_var("LC_ALL", "en_US");
         assert!(!'\u{1361}'.is_space());
-        environ::set_var("LC_ALL", "am_ET");
+        std::env::set_var("LC_ALL", "am_ET");
         assert!('\u{1361}'.is_space());
     }
 
@@ -194,5 +226,24 @@ mod tests {
         assert_eq!(CType::to_uppercase(&'i'), 'I');
         std::env::set_var("LC_ALL", "tr_TR");
         assert_eq!(CType::to_uppercase(&'i'), '\u{0130}');
+    }
+
+    #[test]
+    fn to_lowercase() {
+        assert_eq!(CType::to_lowercase(&'A'), 'a');
+        assert_eq!(CType::to_lowercase(&'1'), '1');
+        std::env::set_var("LC_ALL", "POSIX");
+        assert_eq!(CType::to_lowercase(&'\u{0190}'), '\u{0190}');
+        std::env::set_var("LC_ALL", "en_US");
+        assert_eq!(CType::to_lowercase(&'\u{0190}'), '\u{025b}');
+    }
+
+    #[test]
+    #[ignore]
+    fn to_lowercase_special() {
+        std::env::set_var("LC_ALL", "en_US");
+        assert_eq!(CType::to_lowercase(&'I'), 'i');
+        std::env::set_var("LC_ALL", "tr_TR");
+        assert_eq!(CType::to_lowercase(&'I'), '\u{0131}');
     }
 }

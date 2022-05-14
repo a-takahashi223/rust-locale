@@ -94,3 +94,16 @@ towupper_native(wint_t ch)
     freelocale(l);
     return ret;
 }
+
+wint_t
+towlower_native(wint_t ch)
+{
+    const locale_t l = newlocale(LC_CTYPE_MASK, "", 0);
+    (void)uselocale(l);
+
+    const wint_t ret = towlower(ch);
+
+    (void)uselocale(LC_GLOBAL_LOCALE);
+    freelocale(l);
+    return ret;
+}
