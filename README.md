@@ -37,8 +37,6 @@ These tests may fail depending on the locales' definition.
 
 ## Future plan
 
-- implement `is_blank`
-
 Feature requests are welcome.
 
 ## License
