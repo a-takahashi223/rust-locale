@@ -34,6 +34,7 @@
 #  --doc-base=doc \
 #  --tests-base=tests \
 #  --aux-dir=. \
+#  --lgpl=3 \
 #  --no-conditional-dependencies \
 #  --no-libtool \
 #  --macro-prefix=gl \
@@ -55,6 +56,7 @@ gl_PO_BASE([])
 gl_DOC_BASE([doc])
 gl_TESTS_BASE([tests])
 gl_LIB([libgnu])
+gl_LGPL([3])
 gl_MAKEFILE_NAME([])
 gl_MACRO_PREFIX([gl])
 gl_PO_DOMAIN([])

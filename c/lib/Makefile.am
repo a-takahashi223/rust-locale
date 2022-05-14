@@ -29,6 +29,7 @@
 #  --doc-base=doc \
 #  --tests-base=tests \
 #  --aux-dir=. \
+#  --lgpl=3 \
 #  --no-conditional-dependencies \
 #  --no-libtool \
 #  --macro-prefix=gl \

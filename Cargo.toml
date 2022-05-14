@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 description = "POSIX.1 locale extension for Rust"
 repository = "https://github.com/a-takahashi223/rust-locale"
-license = "MIT OR Apache-2.0"
+license = "LGPL"
 keywords = ["locale", "POSIX", "libc"]
 categories = ["internationalization", "localization"]
 
