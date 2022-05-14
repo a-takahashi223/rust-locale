@@ -1,14 +1,15 @@
 [package]
 name = "rust-locale"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "POSIX.1 locale extension for Rust"
 repository = "https://github.com/a-takahashi223/rust-locale"
-license = "LGPL"
+license = "LGPL-3.0-or-later"
 keywords = ["locale", "POSIX", "libc"]
 categories = ["internationalization", "localization"]
 
 include = [
+    "/README.md",
     "/build.rs",
     "/c/lib/stdlib.in.h",
     "/c/lib/mbtowc-lock.c",
