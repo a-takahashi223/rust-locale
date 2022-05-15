@@ -1,6 +1,6 @@
 [package]
 name = "rust-locale"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 description = "POSIX.1 locale extension for Rust"
 repository = "https://github.com/a-takahashi223/rust-locale"
